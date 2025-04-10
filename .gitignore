@@ -1,0 +1,18 @@
+# Ignore Data
+data/*
+*.xlsx
+*.csv
+
+# Ignore Medical Images
+*.nii.gz
+*.json
+
+
+# Ignore Logs
+logs/
+*.log
+*.err
+
+# Ignore initial TCIA Manifest
+*.tcia
+
