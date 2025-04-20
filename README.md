@@ -1,6 +1,26 @@
 # ISPY2 Multi-Sequential Modeling
+### By: Chris Gerlach, MIDI Lab PhD Student at MSU
 
-*From my last project--see the `glioma_analysis` project--I haven't been able to make much progress due to the small data nature of the dataset. This dataset expands on the glioma project by studying the ISPY2 dataset.*
+#### *For those on GitHub*: I am using my README file as a progress tracker. Some people use Docs; others Notion. I am a madman using my own README. With that settled...
+
+Welcome to my longitudinal analysis of the ISPY2 dataset. Ask yourself, what do you do when you're tired of dealing with predicitive analytics for small data? My answer? Question if you're throttling your HPC trying to download 7 million breast cancer MRIs with 128 CPUs.
+
+I am trying to find new, accurate ways to incorporate temporal knowledge into medical imaging. Modern day cancer radiomics typically looks something like:
+1. Person gets *tomographic* image of their *area in question*
+2. Doctor looks at image
+3. Doctor looks at chart
+4. Doctor does doctor thinking
+5. Doctor comes up with diagnosis
+
+My goal is to add time to the process. Especially after diagnosis, resection or during remission, many people have multiple doctors visits at different points in time. The question typically remains the same: is the tumor growing or shrinking? But what if we could ask how the rate of growth or shrinkage could help in diagnosis or treatment? What if we could find underlying structures in tumor growth?
+
+Many current longitudinal models make an assumption that the time series is sampled uniformly at a rate that is fast enough that one can make data samples of relatively long sequences. To be fair, most are. However, in medical imaging, sampling is incredibly variable; it could be days, weeks, months, or even years between images. And adding in daily X-rays probably isn't the best idea for solving this problem.
+
+So what do we do? This repository will be an exploration of these ideas.
+
+### Week of March 31, 2025
+
+*For those in MIDI Lab:* From my last project--see the `glioma_analysis` project--I haven't been able to make much progress due to the small data nature of the dataset. This dataset expands on the glioma project by studying the ISPY2 dataset. 
 
 ### 0. Setting Up The Project
 
@@ -93,6 +113,8 @@ data_organized/
             └── <SeriesUID>.json (Corresponding metadata)
 ~~~
 
+### Week of April 7, 2025
+
 1d. *Big Data Problems:* 
 
 ### By opening up every DICOM file, we go from on the order of 43,000 files representing series to millions of files--HPCC admin must have been hating me when I was uncompressing the zip files.
@@ -122,6 +144,10 @@ For Alessio's Image Evaluation & Analysis class, I want to do a preliminary 'che
 Simply download the xlsx file locally and secure copy into HPCC in `data/Multi-feature-MRI-NACT-Data.xlsx`. It's amazing how simply trying to Kb instead of Tb makes your day thousands of times easier.
 
 2b. *Aggregate Radiomics:* From specific patient IDs as listed in the xlsx, I want to extract specific radiomics from the mask that conincide with the types of radiomics extracted in the xlsx file.
+
+We create a `compare_radiomics.py` file here which we will use to calculate and analyses the radiomics dfate from the cleaned dataset with the entries in the xlsx file.
+
+In short, it's files like these when I wonder why I started coding in first place.
 
 # CURRENTLY HERE #
 
