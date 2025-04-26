@@ -18,3 +18,12 @@ logs/
 
 # Ignore Jupyter Artifacts
 __pycache__/*
+
+# Ignore development code
+code_development/*
+
+# Ignore paper writing
+paper_writing/*
+
+# Ignore publishing visuals for now
+visuals/*
