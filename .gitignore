@@ -16,3 +16,5 @@ logs/
 # Ignore initial TCIA Manifest
 *.tcia
 
+# Ignore Jupyter Artifacts
+__pycache__/*
