@@ -28,3 +28,7 @@ paper_writing/*
 # Ignore publishing visuals for now
 visuals/*
 
+# Ignore bash files
+*.sh
+src/*.sh
+
