@@ -20,7 +20,7 @@ So what do we do? This repository will be an exploration of these ideas.
 
 ### Week of March 31, 2025
 
-*For those in MIDI Lab:* From my last project--see the `glioma_analysis` project--I haven't been able to make much progress due to the small data nature of the dataset. This dataset expands on the glioma project by studying the ISPY2 dataset. 
+*For those in MIDI Lab:* From my last project--see the `glioma_analysis` project on HPCC--I haven't been able to make much progress due to the small data nature of the dataset. This dataset expands on the glioma project by studying the ISPY2 dataset. I was able to scale the glioma project and created a multi-omics, multi-modal machine learning model. The benefits of the ISPY2 dataset is that it is well studied, so we can (1) verify our methods and results, (2) resolve the small data wall I ran into during testing, evaluation and cross-validation stages, and (3) expand into multi-sequential multi-modal modeling, ie, using multiple different longitudinal (MRI) sequences to construct more robust models.
 
 ### 0. Setting Up The Project
 
@@ -149,19 +149,120 @@ We create a `compare_radiomics.py` file here which we will use to calculate and 
 
 In short, it's files like these when I wonder why I started coding in first place.
 
-# CURRENTLY HERE #
+### Week of April 14, 2025
 
-2c. *Compare Radiomics Exams:* About as descriptive as you could expect
+All hands on deck weekend for getting presentation ready. All review of this week was done on April 20th, after the presentation. I learned a few things since the week before the presentation, so hold on to your seats. They all revolve around the following:
 
+#### *CANNOT Process Radiomics posteriori to data cleaning & NIfTI compression is corrupting the data somehow (checked with MITK, about 50% of NIfTI aren't visually representative of the original DICOM series)*. Solution: Process radiomics after uncompressing zip files before immediately recompressing. Restarting pipeline.
+
+Yes, all the code had to be rewritten from scratch a few days before the presentation. Yes, it sucked. Yes, I did use version control to minimize my chaos. No, it wasn't through github. I present to you what I call "All the crap I threw together that somehow worked but is still garbage":
+
+~~~
+(ispy2) gerlac37@dev-amd20:~/ISPY2$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+        deleted:    abstract.md
+        modified:   clean_data.sh
+        deleted:    test.ipynb
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        __pycache__/
+        clean_extract.sh
+        compare_radiomics.sh
+        paper_writing/
+        sort_radiomics.py
+        src/clean_data_v2.py
+        src/compare_radiomics.py
+        src/process_clinical.py
+        test_environment.ipynb
+        test_ml.py
+        test_radiomics.py
+        test_radiomics.sh
+        test_radiomics_v2.py
+        test_radiomics_v3.py
+        test_radiomics_v4.py
+        test_single_patient_radiomics.ipynb
+        visualization.ipynb
+        visuals/
+~~~
+
+Everything eventually, kind of worked specifically in the `test_radiomics_v2.py` file. The sections 2c-4 are titled according to my original plan. However, since that was thrown out the window, I will simply, lightly annotate a short description of general things that were done along with remaining TODO's. Ready?
+
+2c. *Compare Radiomics Exams:* About as descriptive as you could expect. Didn't get done before the presentation. My radiomics extraction is not matching up with theirs, but many of the overall trends are similar. So I'm on the right track, but something is off. This remains a TODO.
 
 ### 3. Preprocessing Radiomics Data
 
-3a.
-
+3a. Downsampled images and segmentations to match each other then cropped images to regions of interest (segmentation bounding box plus 10 pixels in every direction). Need to check if cropping or downsampling are what's causing radiomics mismatch error.
 
 ### 4. Radiomics Machine Learning
 
-4a. 
+4a. In `test_ml.py`: I built a multi modal model using a two layer MLP on the clinical data and a basic implementation of the latent space velocity, (MLP embedding layer, latent transformation, MLP layer), before concatinating the results and outputting through a sigmoid. All other activations were RELU. Standard Scaler was used to regulate training (definitely helped), but no feature selection was performed. Initial results for the model show a 80% accuracy and 0.75 AUC with the following:
 
+![training loss image](./visuals/ml_training_loss.png)
+
+![ROC image](./visuals/ml_ROC.png)
+
+![confusion matrix image](./visuals/ml_confusion_matrix.png)
+
+From my literature review, the state of the art has a 0.83 AUC (TODO: need to do a more thorough check just in case)
+
+From these images and results, we can see that the model is working "reasonably well". However, without a control, I can't tell exactly how well.
+
+#### Feedback from the presentation:
+(1) "It's not a velocity because you aren't finding the instantaneous rate of change between the features", he said with disdain. He sat back triumphantly knowing that he had put me in my place after presenting my work. The war was over. He won. He was the smartest in the room. 
+
+Except: "Well yeah, you can't just live and exist in an MRI machine for months. It's semantic because that sounds a lot better than 'Latent Space Average Rate of Change' Model." Water is in fact wet.
+
+After continuing to belittle my work due to my choice in naming, our advisor decided enough was enough and said, "I like the name. In fact, I chose it." 
+
+Man, that was funny. Welp... I'm keeping the name.
+
+(2) As the unnamed individual attempted to convince the audience of the futility of my work, he did mention something that I would like to explore: positional encoding. The comment was that my work is essentially derivative because transformers have transcended as dominant time series models. But, we only know that to be the case in NLP where the time series are long and there's no 'non-uniform' sampling. That begs the question: Would positional encoding be useful as a means of encoding temporal information in such short time series like medical imaging? That could provide more freedom in architecture.
+
+(3) Create a control model without temporal information and another comparative model where I include the static features along with time deltas to see how those perform against my latent space model. Yes, absolutely. 'Reasonably Well' is inherently relational. I need to build some comparison models.
+
+### Week of April 21, 2025
+
+This week was the last week of the class project. During this time, I updated the radiomics extraction, trying to fix how I compute the mask from the segmentation file, and I completed the machine learning portion and comparsion.
+
+### 5. Cleaning & Radiomics Extraction (Refactored, Parallelized)
+
+Radiomics extraction was completely reworked. By the end of last week, I had 4 different versions of `test_radiomics_v#.py`. It was very chaotic. I'm not doing that whole nonsense of too many files and technical debt all over again. Plus, those files were doing everything after download: cleaning and extraction. The logic has been modularized:
+
+5a. Data cleaning is equivalent to data validity for this project. So, instead of iterating over all data in the os, I chose to create a main file that contains all valid data `data/valid_patient_information.json` made from the `src/filter_dce_and_masks.ipynb` file.
+    - TODO: Too stringent on the exclusion criteria
+Whenever I go through the data now, I simply read in the JSON and access particular directories.
+
+5b. Radiomics extraction has been computationally... rough. The process has now been defined by the following process:
+    - Unzip data
+    - Read DICOM series
+    - Remove data folder
+    - Extract 3D frame from 4D video
+    - Resample segmentation to match DCE series shape
+    - Isolate tumor mask from segmentation
+    - Crop DCE and segemntation files to bounding box plus margin defined by tumor mask
+    - Extract radiomics
+    - Save extracted radiomics
+The way it works is one calls the SLURM runner `extract_radiomics.sh` which then creates an array of jobs, each associated with one patient, which run a python driver `src/radiomics_extraction_driver.py` through the above workflow with paths determined from `data/valid_patient_information.json`. Results are stored in a directory defined in the python driver in CSVs at `logs/patient_radiomics_v#/radiomics_<patient id>.csv`.
+
+### 6. Machine Learning
+
+6a. Two test scripts, `test_ml.py` and `test_ml_v2.py`, were created. The first was a test of the latent space velocity concept before the class presentation, while the second is an updated version with multiple machine learning models and their comparisons.
+
+### 7. Reporting Results
+
+A final presentation `paper_writing/BME_891_final_breast_cancer_radiomics_presentation.pptx` and report `paper_writing/BME_891_final_project_report.pdf` were created for this class project. However, as the report states, the overall project is very much unfinished. I will update presentations and reports as I move on past class to research, conferences and publications. However, this will be done in bits and pieces to ensure privacy during research.
 
 ## Research Project
+
+### Weeks of April 28-May 5, 2025
+
+No measurable progress made this week on the project. Moved back to California and created timeline for PhD success (plus other administrative work). Future research plans for this data mainly include fixing radiomics extraction and then testing models that vary inclusion of time deltas between exams.
+
+### Week of May 12, 2025
