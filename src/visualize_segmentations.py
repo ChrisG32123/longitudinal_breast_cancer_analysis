@@ -221,7 +221,6 @@ def process_patient(patient_id: str, patient_info: dict):
                             reoriented_resampled_frames,
                             tum_rs)
 
-
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     with open(VALID_PATIENT_INFO,'r') as f:
