@@ -1,3 +1,9 @@
+"""
+By Chris Gerlach, May 22, 2025
+
+Creates gifs showing the gadolinium contrast moving through the breast
+during the DCE series capture.
+"""
 import os
 from pathlib import Path
 import json

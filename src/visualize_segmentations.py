@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+By Chris Gerlach, May 22, 2025
+
+Creates subplot visuals of the tumor masks overlaid evenly distributed slices
+across each 3D frame across time.
+"""
 import json
 import shutil
 import tempfile

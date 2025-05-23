@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
+By Chris Gerlach
 Aggregate individual radiomics CSVs into one master file,
 adding days_from_T0 and percent-change columns.
+
+Accessed May 23, 2025
+
+Run this script after extracting individual radiomics extraction driver
 """
 
 from pathlib import Path
@@ -9,8 +14,8 @@ import pandas as pd
 import numpy as np
 
 # ——— Paths —————————————————————————————————————————————————————
-IN_DIR  = Path("/mnt/home/gerlac37/ISPY2/data/patient_radiomics_v2")
-OUT_CSV = Path("/mnt/home/gerlac37/ISPY2/data/radiomics_processed_v2.csv")
+IN_DIR  = Path("/mnt/home/gerlac37/ISPY2/data/patient_radiomics_v3")
+OUT_CSV = Path("/mnt/home/gerlac37/ISPY2/data/radiomics_processed_v3.csv")
 
 # ——— Read & concatenate all per-patient CSVs —————————————————————————
 all_files = sorted(IN_DIR.glob("radiomics_*.csv"))

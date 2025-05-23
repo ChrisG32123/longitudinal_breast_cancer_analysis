@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """
+By Chris Gerlach, May 23, 2025
+
 Extract PyRadiomics shape features for exactly one patient,
 selected by --patient-index (0-based) from the sorted patient list.
 Adds steps to isolate the tumor mask (label 0) and crop the image + mask
 to the tumor bounding box with a 5-pixel margin.
+
+Improvement upon radiomics_driver.py file by correct DCE frame separation.
 """
 
 import argparse
