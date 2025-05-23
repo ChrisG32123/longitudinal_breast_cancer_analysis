@@ -30,5 +30,5 @@ visuals/*
 
 # Ignore bash files
 *.sh
-src/*.sh
+drivers/*.sh
 

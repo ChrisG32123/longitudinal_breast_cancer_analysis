@@ -261,8 +261,40 @@ A final presentation `paper_writing/BME_891_final_breast_cancer_radiomics_presen
 
 ## Research Project
 
-### Weeks of April 28-May 5, 2025
+### Weeks of April 28 & May 5, 2025
 
-No measurable progress made this week on the project. Moved back to California and created timeline for PhD success (plus other administrative work). Future research plans for this data mainly include fixing radiomics extraction and then testing models that vary inclusion of time deltas between exams.
+Moved back to California and created timeline for PhD success (plus other administrative work). Future research plans for this data mainly include fixing radiomics extraction and then testing models that vary inclusion of time deltas between exams.
 
 ### Week of May 12, 2025
+
+No measurable progress made this week on the project. Still finalizing California move.
+
+### Week of May 19, 2025
+
+Back on track. Worked on radiomics correction. Finished visualizing overlay and gifs! Through that I figured out the following about segmentation mask:
+1. Tumor Masks: Volser Analysis Segmentation holds a 5-bit mask. Can identify a tumor by even pixel values
+2. DCE Series: 
+Ordered temporally by the following:
+    - "TempPosID":"0020|0100"
+    - "AcqTime":"0008|0032"
+Ordered spatially by the following:
+    - "InstanceNumber":"0020|0013"
+    - "SliceLocation":"0020|1041"
+    - "ImagePositionPatient":"0020|0032"
+
+Design Update:
+    - `drivers/` now stores all completed bash files and is not included in git repository. All other bash files are (showing incompleted scripts and tasks) are in the root directory
+
+Visuals Update:
+    - `src/make_gifs.py` makes gifs and stores them in `visuals/gifs_overlay/`
+    - `src/visualize_segmentations.py` makes overlays of tumor on top of DCE series and stores them in `visuals/overlays/`
+    - All other visualization code has been cleaned up/deleted.
+
+Other Code Update:
+    - `src/filter_valid_patient_information.ipynb` renamed to better reflect script use
+    - `code_development/test_dce_time_axis.ipynb` was used for testing gifs and DCE frame separation
+
+
+
+
+### Week of May 26, 2025
