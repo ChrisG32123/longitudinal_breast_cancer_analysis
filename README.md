@@ -271,7 +271,7 @@ No measurable progress made this week on the project. Still finalizing Californi
 
 ### Week of May 19, 2025
 
-Back on track. Worked on radiomics correction. Finished visualizing overlay and gifs! Through that I figured out the following about segmentation mask:
+Back on track! Worked on radiomics correction. Finished visualizing overlay and gifs!!! Through that I figured out the following about segmentation mask:
 1. Tumor Masks: Volser Analysis Segmentation holds a 5-bit mask. Can identify a tumor by even pixel values
 2. DCE Series: 
 Ordered temporally by the following:
@@ -281,6 +281,7 @@ Ordered spatially by the following:
     - "InstanceNumber":"0020|0013"
     - "SliceLocation":"0020|1041"
     - "ImagePositionPatient":"0020|0032"
+This means that the data is being correctly parsed and stored. So now I have verified that when I overlay the tumor masks onto the DCE 3D frames, they will be don correctly!!
 
 Design Update:
     - `drivers/` now stores all completed bash files and is not included in git repository. All other bash files are (showing incompleted scripts and tasks) are in the root directory
@@ -294,7 +295,8 @@ Other Code Update:
     - `src/filter_valid_patient_information.ipynb` renamed to better reflect script use
     - `code_development/test_dce_time_axis.ipynb` was used for testing gifs and DCE frame separation
 
-
-
+Goals:
+    - Fix radiomics correction now that data is being correctly parsed, stored, and overlaid.
+    - Rerun machine learning code once radiomics extraction has been fixed.
 
 ### Week of May 26, 2025
