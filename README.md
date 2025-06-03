@@ -300,3 +300,69 @@ Goals:
     - Rerun machine learning code once radiomics extraction has been fixed.
 
 ### Week of May 26, 2025
+
+Radiomics code from last week is running now and very smoothly, but I'm running into a strange issue. First of all, they're all wrong, but that's not surprising at this point. The strange part is that every single patient's radiomics is dropping substantially after each time point in a way that's completely inconsistent with my checks from MITK and the reference file. Additionally, since this is happening with every patient, I'm pretty sure if chemo worked as well as my data is showing, then cancer would basically be seen like pneumonia. For example, my csv has the following head:
+
+| patient\_id | date\_str  | date\_ordinal |     volume | sphericity | longest\_diameter | time\_label | days\_from\_T0 | vol\_pch\_from\_T0 | sph\_pch\_from\_T0 | ld\_pch\_from\_T0 |
+| ----------: | :--------- | ------------: | ---------: | ---------: | ----------------: | :---------- | -------------: | -----------------: | -----------------: | ----------------: |
+|      100899 | 10-26-2002 |        731149 |  3892.5203 |  0.1605350 |          105.6628 | T0          |              0 |              0.000 |              0.000 |             0.000 |
+|      100899 | 01-30-2003 |        731245 |  3342.9984 |  0.0870171 |          110.6558 | T2          |             96 |            −14.117 |            −45.796 |             4.725 |
+|      102212 | 04-04-2002 |        730944 | 33763.7130 |  0.1550478 |          111.7177 | T0          |              0 |              0.000 |              0.000 |             0.000 |
+|      102212 | 05-02-2002 |        730972 | 12306.3110 |  0.1898663 |           94.5784 | T1          |             28 |            −63.552 |             22.457 |           −15.342 |
+|      102212 | 07-06-2002 |        731037 |  1741.4937 |  0.1980810 |           95.5282 | T2          |             93 |            −94.842 |             27.755 |           −14.492 |
+|      102212 | 09-21-2002 |        731114 |   175.2493 |  0.2507185 |          101.6818 | T3          |            170 |            −99.481 |             61.704 |            −8.983 |
+
+
+If only cancer dropped 99% every month of chemo... That is the problem I will ask Adam about this week. To help, I made additional visualizations including the bounding boxes over the overlays in `visuals/bboxes/`. I additionally reorganized the `visuals/` directory to:
+
+~~~
+visuals/
+├── bboxes
+├── gifs_overlay
+├── machine_learning
+├── outlines
+├── overlays
+└── raw_bounding_box_cut_off
+~~~
+
+Therefore, I transitioned from extracting radiomics to using the radiomics offered from the reference file and working on the machine learning side of the code. I wanted to check how injecting the velocity transform at different layers would affect the results. The NoVelocity model is the control model with no velocity transformation. Every model is a multimodal model where the clinical data is put through a 2 layer NN and the radiomics is put through 4 NN layers with a chosen layer being the velocity transformation layer. Ok, before I get to the results, here are the code updates:
+
+Each of these research questions I'm going to name an "experiment". Each experiment will be housed in it's own subdirectory of the `experiments/` directory named after the research question. Some of the `code_development/` machine learning scripts have been moved and changed around as I begin looking into the ml again and adopt this new style of ml experimentation. Additionally, a new bash script to run experiments called `drivers/run_experiments.sh` has been created to easily run each research question especially as I expand outwards to different questions. In total, here are the changes:
+
+~~~
+drivers/
+├── clean_data.sh
+├── download_ispy2.sh
+├── extract_radiomics.sh
+├── run_experiment.sh
+└── visualize.sh
+
+experiments/
+└── where_to_put_velocity_transform
+    ├── ml_test_time_points.ipynb
+    └── ml_test_time_points.py
+~~~
+
+Ok, now onto the results:
+
+| Placement             | Accuracy | ROC AUC |
+| :-------------------- | :------: | :-----: |
+| **NoVelocity**        |  0.7260  |  0.7647 |
+| **Vel @ Input**       |  0.6986  |  0.7451 |
+| **Vel @ Layer1**      |  0.6986  |  0.7513 |
+| **Vel @ Layer2**      |  0.7534  |  0.8137 |
+| **Vel @ Layer3**      |  0.7397  |  0.7522 |
+| **Vel @ OutputLayer** |  0.6986  |  0.7772 |
+
+Hold up. 
+
+Wait a minute.
+
+Why does injecting the temporal information in Layers 2 and 3, especially layer 2, make soo much difference???!!!
+
+In fact, for a simple feed-forward network, I'm almost hitting the State-Of-The-Art when putting the temporal information in the middle!
+
+From Adam's class, we covered how U-Nets are all the rage because they require very few samples due to the concatenation of the layers (U-shape) for image feature recognition, and more specifically, how the reduction of the feature space through multiple CNN and pooling layers led to a very reduced latent space that could be interpreted as a low-rank kernel representation. Or at least, that's how I thought about it. Hang on with me here... What if we were to combine the U-net idea of referencing previous layers to solve the low data sample problem with injecting temporal dynamics into the latent space?!
+
+I could circumvent the radiomics extraction completely too by applying the U-Net directly to the images too! Repeat after me: No more PyRadiomics!
+
