@@ -14,8 +14,9 @@ import pandas as pd
 import numpy as np
 
 # ——— Paths —————————————————————————————————————————————————————
-IN_DIR  = Path("/mnt/home/gerlac37/ISPY2/data/patient_radiomics_v3")
-OUT_CSV = Path("/mnt/home/gerlac37/ISPY2/data/radiomics_processed_v3.csv")
+VERSION = 4
+IN_DIR  = Path(f"/mnt/home/gerlac37/ISPY2/data/patient_radiomics_v{VERSION}")
+OUT_CSV = Path(f"/mnt/home/gerlac37/ISPY2/data/radiomics_processed_v{VERSION}.csv")
 
 # ——— Read & concatenate all per-patient CSVs —————————————————————————
 all_files = sorted(IN_DIR.glob("radiomics_*.csv"))
